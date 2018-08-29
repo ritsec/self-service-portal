@@ -29,12 +29,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # Set up blueprints
+    from . import ui
+    app.register_blueprint(ui.bp)
+    app.add_url_rule('/', endpoint='index')
+
     from . import account
     app.register_blueprint(account.bp)
-
-    # Set up blog
-    # from . import blog
-    # app.register_blueprint(blog.bp)
-    # app.add_url_rule('/', endpoint='index')
 
     return app
