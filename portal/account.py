@@ -28,89 +28,6 @@ bp = Blueprint('account', __name__, url_prefix='/account')
 
 
 ##
-#   Routes
-##
-@bp.route('/change-password', methods=['GET', 'POST'])
-@required_args(post_args=['code', 'user', 'password'], get_args=['code'])
-@requires_code(methods=['POST', 'GET'])
-def change_password():
-    # Handle form submission
-    if request.method == 'POST':
-        # Send password change request
-        resp = requests.post('{schema}://{host}:{port}/change-password'.format(
-            schema=current_app.config['WEBCMD_SCHEMA'],
-            host=current_app.config['WEBCMD_HOST'],
-            port=current_app.config['WEBCMD_PORT'],
-        ), data={
-            'username': request.args['user'],
-            'new_password': request.args['password'],
-        })
-        if resp.status_code == 200:
-            db = get_db()
-            db.execute(
-                'DELETE FROM EMAIL_CODE WHERE code = ?',
-                (request.args['code'], )
-            )
-            db.commit()
-            return redirect(url_for('account.success'))
-        else:
-            return redirect(url_for('account.error'))
-
-    # Serve UI
-    resp = make_response(render_template(
-        'account/change-password.html', user=check_code(request.args['code'])
-    ))
-    return uncached_response(resp)
-
-
-@bp.route('/error', methods=['GET'])
-def error():
-    return render_template('account/error.html')
-
-
-@bp.route('/generate-code', methods=['GET'])
-def generate_code():
-    # TODO email code instead of posting code
-    # TODO create UI for submitting email for code
-    return new_code(request.args['user'])
-
-
-@bp.route('/register', methods=['GET', 'POST'])
-@required_args(post_args=['code', 'fname', 'lname', 'email'])
-@requires_code
-def create():
-    # Handle form submission
-    if request.method == 'POST':
-        # Send user creation request
-        resp = requests.post('{schema}://{host}:{port}'.format(
-            schema=current_app.config['WEBCMD_SCHEMA'],
-            host=current_app.config['WEBCMD_HOST'],
-            port=current_app.config['WEBCMD_PORT'],
-        ), data={
-            'fname': request.args['fname'],
-            'lname': request.args['lname'],
-            'email': request.args['email'],
-        })
-
-        if resp.status_code == 200:
-            delete_code(request.args['code'])
-            return redirect(url_for('account.success'))
-        else:
-            return redirect(url_for('account.error'))
-
-    # Serve UI
-    resp = make_response(render_template(
-        'account/change-password.html', user=check_code(request.args['code'])
-    ))
-    return uncached_response(resp)
-
-
-@bp.route('/success', methods=['GET'])
-def change_successful():
-    return render_template('account/success.html')
-
-
-##
 #   Decorators
 ##
 class required_args(object):
@@ -136,7 +53,7 @@ class required_args(object):
                     if key not in request.args:
                         abort(400)
 
-            route(*args, **kwargs)
+            return route(*args, **kwargs)
         return wrapped_route
 
 
@@ -157,7 +74,7 @@ class requires_code(object):
                 if not check_code(request.args['code']):
                     abort(403)
 
-            route(args, kwargs)
+            return route(*args, **kwargs)
         return wrapped_route
 
 
@@ -213,3 +130,87 @@ def uncached_response(resp):
     resp.headers['Pragma'] = 'no-cache'
     resp.headers['Expires'] = '0'
     return resp
+
+
+##
+#   Routes
+##
+@bp.route('/change-password', methods=['GET', 'POST'])
+@required_args(post_args=['code', 'user', 'password'], get_args=['code'])
+@requires_code(methods=['POST', 'GET'])
+def change_password():
+    # Handle form submission
+    if request.method == 'POST':
+        # Send password change request
+        resp = requests.post('{schema}://{host}:{port}/change-password'.format(
+            schema=current_app.config['WEBCMD_SCHEMA'],
+            host=current_app.config['WEBCMD_HOST'],
+            port=current_app.config['WEBCMD_PORT'],
+        ), data={
+            'username': request.args['user'],
+            'new_password': request.args['password'],
+        })
+        if resp.status_code == 200:
+            db = get_db()
+            db.execute(
+                'DELETE FROM EMAIL_CODE WHERE code = ?',
+                (request.args['code'], )
+            )
+            db.commit()
+            return redirect(url_for('account.success'))
+        else:
+            return redirect(url_for('account.error'))
+
+    # Serve UI
+    resp = make_response(render_template(
+        'account/change-password.html', user=check_code(request.args['code'])
+    ))
+    return uncached_response(resp)
+
+
+@bp.route('/error', methods=['GET'])
+def error():
+    return render_template('account/error.html')
+
+
+@bp.route('/generate-code', methods=['GET'])
+@required_args(get_args=['user'])
+def generate_code():
+    # TODO email code instead of posting code
+    # TODO create UI for submitting email for code
+    return new_code(request.args['user'])
+
+
+@bp.route('/register', methods=['GET', 'POST'])
+@required_args(post_args=['code', 'fname', 'lname', 'email'])
+@requires_code
+def create():
+    # Handle form submission
+    if request.method == 'POST':
+        # Send user creation request
+        resp = requests.post('{schema}://{host}:{port}'.format(
+            schema=current_app.config['WEBCMD_SCHEMA'],
+            host=current_app.config['WEBCMD_HOST'],
+            port=current_app.config['WEBCMD_PORT'],
+        ), data={
+            'fname': request.args['fname'],
+            'lname': request.args['lname'],
+            'email': request.args['email'],
+        })
+
+        if resp.status_code == 200:
+            delete_code(request.args['code'])
+            return redirect(url_for('account.success'))
+        else:
+            return redirect(url_for('account.error'))
+
+    # Serve UI
+    resp = make_response(render_template(
+        'account/change-password.html', user=check_code(request.args['code'])
+    ))
+    return uncached_response(resp)
+
+
+@bp.route('/success', methods=['GET'])
+def change_successful():
+    return render_template('account/success.html')
