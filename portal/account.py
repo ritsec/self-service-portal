@@ -95,7 +95,6 @@ def change_successful():
 
 @bp.route('/change-unsuccessful', methods=['GET'])
 def change_unsuccessful():
-    # TODO create template
     return render_template('account/change-unsuccessful.html')
 
 
@@ -132,7 +131,6 @@ def create():
 
         if resp.status_code == 200:
             delete_code(request.args['code'])
-            # TODO make this template generic to all changes
             return redirect(url_for('account.change-successful.html'))
         else:
             return redirect(url_for('account.change-unsuccessful.html'))
