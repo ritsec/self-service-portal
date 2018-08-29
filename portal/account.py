@@ -31,21 +31,11 @@ bp = Blueprint('account', __name__, url_prefix='/account')
 #   Routes
 ##
 @bp.route('/change-password', methods=['GET', 'POST'])
+@required_args(post_args=['code', 'user', 'password'], get_args=['code'])
+@requires_code(methods=['POST', 'GET'])
 def change_password():
     # Handle form submission
     if request.method == 'POST':
-        # Make sure there's a valid request
-        if (
-            'code' not in request.args or
-            'user' not in request.args or
-            'password' not in request.args
-        ):
-            abort(400)
-
-        # Make sure the code is valid
-        if not check_code('code') == request.args['user']:
-            abort(403)
-
         # Send password change request
         resp = requests.post('{schema}://{host}:{port}/change-password'.format(
             schema=current_app.config['WEBCMD_SCHEMA'],
@@ -67,30 +57,10 @@ def change_password():
             return redirect(url_for('account.error'))
 
     # Serve UI
-    try:
-        code = request.args['c']
-    except KeyError:
-        # Need to send the code
-        abort(400)
-
-    user = check_code(code)
-    if user is not None:
-        resp = make_response(render_template(
-            'account/change-password.html', user=user
-        ))
-
-        # Make sure the browser doesn't cache the page
-        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        resp.headers['Pragma'] = 'no-cache'
-        resp.headers['Expires'] = '0'
-        return resp
-    else:
-        abort(403)
-
-
-@bp.route('/change-successful', methods=['GET'])
-def change_successful():
-    return render_template('account/success.html')
+    resp = make_response(render_template(
+        'account/change-password.html', user=check_code(request.args['code'])
+    ))
+    return uncached_response(resp)
 
 
 @bp.route('/error', methods=['GET'])
@@ -106,18 +76,11 @@ def generate_code():
 
 
 @bp.route('/register', methods=['GET', 'POST'])
+@required_args(post_args=['code', 'fname', 'lname', 'email'])
+@requires_code
 def create():
     # Handle form submission
     if request.method == 'POST':
-        # Make sure there's a valid request
-        if (
-            'fname' not in request.args or
-            'lname' not in request.args or
-            'email' not in request.args or
-            'code' not in request.args
-        ):
-            abort(400)
-
         # Send user creation request
         resp = requests.post('{schema}://{host}:{port}'.format(
             schema=current_app.config['WEBCMD_SCHEMA'],
@@ -136,7 +99,15 @@ def create():
             return redirect(url_for('account.error'))
 
     # Serve UI
-    return render_template('account/register.html')
+    resp = make_response(render_template(
+        'account/change-password.html', user=check_code(request.args['code'])
+    ))
+    return uncached_response(resp)
+
+
+@bp.route('/success', methods=['GET'])
+def change_successful():
+    return render_template('account/success.html')
 
 
 ##
@@ -236,12 +207,9 @@ def new_code(user):
     return code
 
 
-##
-#   Other stuff
-##
-
-# Test route to make sure valid codes return valid
-# @bp.route('/hello')
-# def hello():
-#     code = new_code()
-#     return str(check_code(code))
+def uncached_response(resp):
+    # Add headers to tell everyone not to cache this response
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
