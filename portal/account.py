@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 from secrets import token_urlsafe
 
 from flask import (
-    abort, Blueprint, make_response, redirect, render_template, request,
-    url_for
+    abort, Blueprint, current_app, make_response, redirect, render_template,
+    request, url_for
 )
+import requests
 
 from portal.db import get_db
 
@@ -16,11 +17,41 @@ bp = Blueprint('account', __name__, url_prefix='/account')
 ##
 @bp.route('/change-password', methods=['GET', 'POST'])
 def change_password():
-    # Do password changing
+    # Handle form submission
     if request.method == 'POST':
-        # Send password change request
-        return redirect(url_for('account.change_successful'))
+        # Make sure there's a valid request
+        if (
+            'code' not in request.args or
+            'user' not in request.args or
+            'password' not in request.args
+        ):
+            abort(400)
 
+        # Make sure the code is valid
+        if not check_code('code') == request.args['user']:
+            abort(403)
+
+        # Send password change request
+        resp = requests.post('{schema}://{host}:{port}/change-password'.format(
+            schema=current_app.config['WEBCMD_SCHEMA'],
+            host=current_app.config['WEBCMD_HOST'],
+            port=current_app.config['WEBCMD_PORT'],
+        ), data={
+            'username': request.args['user'],
+            'new_password': request.args['password'],
+        })
+        if resp.status_code == 200:
+            db = get_db()
+            db.execute(
+                'DELETE FROM EMAIL_CODE WHERE code = ?',
+                (request.args['code'], )
+            )
+            db.commit()
+            return redirect(url_for('account.change_successful'))
+        else:
+            return redirect(url_for('account.change_unsuccessful'))
+
+    # Serve UI
     try:
         code = request.args['c']
     except KeyError:
@@ -47,38 +78,54 @@ def change_successful():
     return render_template('account/change-successful.html')
 
 
+@bp.route('/change-unsuccessful', methods=['GET'])
+def change_unsuccessful():
+    # TODO create template
+    return render_template('account/change-unsuccessful.html')
+
+
 @bp.route('/generate-code', methods=['GET'])
 def generate_code():
+    # TODO email code instead of posting code
+    # TODO create UI for submitting email for code
     return new_code(request.args['user'])
 
 
-@bp.route('/register', methods=['POST'])
+@bp.route('/register', methods=['GET', 'POST'])
 def create():
-    # TODO
-    pass
+    # Handle form submission
+    if request.method == 'POST':
+        # Make sure there's a valid request
+        if (
+            'fname' not in request.args or
+            'lname' not in request.args or
+            'email' not in request.args or
+            'code' not in request.args
+        ):
+            abort(400)
+
+        # Send user creation request
+        resp = requests.post('{schema}://{host}:{port}'.format(
+            schema=current_app.config['WEBCMD_SCHEMA'],
+            host=current_app.config['WEBCMD_HOST'],
+            port=current_app.config['WEBCMD_PORT'],
+        ), data={
+            'fname': request.args['fname'],
+            'lname': request.args['lname'],
+            'email': request.args['email'],
+        })
+
+        if resp.status_code == 200:
+            delete_code(request.args['code'])
+            # TODO make this template generic to all changes
+            return redirect(url_for('account.change-successful.html'))
+        else:
+            return redirect(url_for('account.change-unsuccessful.html'))
 
 
 ##
 #   Helper functions
 ##
-def new_code(user):
-    # Generate securely random 32-byte base64 encoded url-safe string
-    code = token_urlsafe(32)
-
-    # Get timestamp of tomorrow
-    tomorrow = datetime.now() + timedelta(days=1)
-    tomorrow = tomorrow.timestamp()
-
-    # Add code to database
-    db = get_db()
-    db.execute(
-        'INSERT INTO EMAIL_CODE (val, user, expires) VALUES (?, ?, ?)',
-        (code, user, tomorrow)
-    )
-    db.commit()
-    return code
-
-
 def check_code(code):
     db = get_db()
 
@@ -96,6 +143,31 @@ def check_code(code):
         return False
 
     return entry['user']
+
+
+def delete_code(code):
+    db = get_db()
+    db.execute('DELTE FROM EMAIL_CODE WHERE val = ?', (code, ))
+    db.commit()
+
+
+def new_code(user):
+    # Generate securely random 32-byte base64 encoded url-safe string
+    code = token_urlsafe(32)
+
+    # Get timestamp of tomorrow
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = tomorrow.timestamp()
+
+    # Add code to database
+    db = get_db()
+    db.execute(
+        'INSERT INTO EMAIL_CODE (val, user, expires) VALUES (?, ?, ?)',
+        (code, user, tomorrow)
+    )
+    db.commit()
+    return code
+
 
 ##
 #   Other stuff
