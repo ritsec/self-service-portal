@@ -45,12 +45,12 @@ class required_args(object):
         def wrapped_route(*args, **kwargs):
             if request.method == 'GET' and isinstance(self.get_args, list):
                 for key in self.get_args:
-                    if key not in request.args:
+                    if key not in request.values:
                         abort(400)
 
-            elif request.method == 'POST' and isinstance(self.port_args, list):
+            elif request.method == 'POST' and isinstance(self.post_args, list):
                 for key in self.post_args:
-                    if key not in request.args:
+                    if key not in request.values:
                         abort(400)
 
             return route(*args, **kwargs)
@@ -64,14 +64,14 @@ class requires_code(object):
 
     This decorator should be used after (under) the "required_args" decorator.
     """
-    def __init__(self, methods=['POST']):
+    def __init__(self, methods):
         self.methods = methods
 
     def __call__(self, route):
         @functools.wraps(route)
         def wrapped_route(*args, **kwargs):
             if request.method in self.methods:
-                if not check_code(request.args['code']):
+                if not check_code(request.values['code']):
                     abort(403)
 
             return route(*args, **kwargs)
@@ -147,14 +147,14 @@ def change_password():
             host=current_app.config['WEBCMD_HOST'],
             port=current_app.config['WEBCMD_PORT'],
         ), data={
-            'username': request.args['user'],
-            'new_password': request.args['password'],
+            'username': request.values['user'],
+            'new_password': request.values['password'],
         })
         if resp.status_code == 200:
             db = get_db()
             db.execute(
                 'DELETE FROM EMAIL_CODE WHERE code = ?',
-                (request.args['code'], )
+                (request.values['code'], )
             )
             db.commit()
             return redirect(url_for('account.success'))
@@ -163,7 +163,7 @@ def change_password():
 
     # Serve UI
     resp = make_response(render_template(
-        'account/change-password.html', user=check_code(request.args['code'])
+        'account/change-password.html', user=check_code(request.values['code'])
     ))
     return uncached_response(resp)
 
@@ -178,12 +178,12 @@ def error():
 def generate_code():
     # TODO email code instead of posting code
     # TODO create UI for submitting email for code
-    return new_code(request.args['user'])
+    return new_code(request.values['user'])
 
 
 @bp.route('/register', methods=['GET', 'POST'])
-@required_args(post_args=['code', 'fname', 'lname', 'email'])
-@requires_code
+@required_args(post_args=['code', 'fname', 'lname', 'email', 'password'])
+@requires_code(['GET', 'POST'])
 def create():
     # Handle form submission
     if request.method == 'POST':
@@ -193,20 +193,20 @@ def create():
             host=current_app.config['WEBCMD_HOST'],
             port=current_app.config['WEBCMD_PORT'],
         ), data={
-            'fname': request.args['fname'],
-            'lname': request.args['lname'],
-            'email': request.args['email'],
+            'fname': request.values['fname'],
+            'lname': request.values['lname'],
+            'email': request.values['email'],
         })
 
         if resp.status_code == 200:
-            delete_code(request.args['code'])
+            delete_code(request.values['code'])
             return redirect(url_for('account.success'))
         else:
             return redirect(url_for('account.error'))
 
     # Serve UI
     resp = make_response(render_template(
-        'account/change-password.html', user=check_code(request.args['code'])
+        'account/register.html', user=check_code(request.values['code'])
     ))
     return uncached_response(resp)
 

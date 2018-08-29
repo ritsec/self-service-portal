@@ -4,10 +4,15 @@
 
 {% block body %}
 <form action="/account/register" method="POST">
-    <label>Select a new password for {{ user }}:</label><br>
-    <input name="user" type="hidden" value="{{ user }}" />
-    <input name="password" type="password" placeholder="New Password" />
-    <input name="password" type="password" placeholder="Confirm Password" />
+    <label>Please fill in the following form to register your RITSEC user.  All fields are required.</label><br>
+    <input name="fname" type="text" placeholder="First Name" required /><br>
+    <input name="lname" type="text" placeholder="Last Name" required /><br>
+    <input name="password" type="password" placeholder="New Password" required /><br>
+    <input type="password" placeholder="Confirm Password" required /><br>
+
+    <!-- Hidden, generated fields that the endpoint still needs -->
+    <input name="email" type="hidden" value="{{ user }}@rit.edu" />
+    <input name="code" type="hidden" value="{{ request.values['code'] }}" />
     <input type="submit" />
 </form>
 {% endblock %}
