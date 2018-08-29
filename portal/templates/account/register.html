@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Register New User{% endblock %}
+
+{% block body %}
+<form action="/account/register" method="POST">
+    <label>Select a new password for {{ user }}:</label><br>
+    <input name="user" type="hidden" value="{{ user }}" />
+    <input name="password" type="password" placeholder="New Password" />
+    <input name="password" type="password" placeholder="Confirm Password" />
+    <input type="submit" />
+</form>
+{% endblock %}
