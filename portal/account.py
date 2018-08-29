@@ -62,9 +62,9 @@ def change_password():
                 (request.args['code'], )
             )
             db.commit()
-            return redirect(url_for('account.change_successful'))
+            return redirect(url_for('account.success'))
         else:
-            return redirect(url_for('account.change_unsuccessful'))
+            return redirect(url_for('account.error'))
 
     # Serve UI
     try:
@@ -90,12 +90,12 @@ def change_password():
 
 @bp.route('/change-successful', methods=['GET'])
 def change_successful():
-    return render_template('account/change-successful.html')
+    return render_template('account/success.html')
 
 
-@bp.route('/change-unsuccessful', methods=['GET'])
-def change_unsuccessful():
-    return render_template('account/change-unsuccessful.html')
+@bp.route('/error', methods=['GET'])
+def error():
+    return render_template('account/error.html')
 
 
 @bp.route('/generate-code', methods=['GET'])
@@ -131,11 +131,12 @@ def create():
 
         if resp.status_code == 200:
             delete_code(request.args['code'])
-            return redirect(url_for('account.change-successful.html'))
+            return redirect(url_for('account.success'))
         else:
-            return redirect(url_for('account.change-unsuccessful.html'))
+            return redirect(url_for('account.error'))
 
     # Serve UI
+    return render_template('account/register.html')
 
 
 ##
