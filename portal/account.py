@@ -1,12 +1,27 @@
+"""
+account.py
+
+Author:     Sean Newman
+Created:    28 August 2018
+Description:
+    Endpoints and functions that relate to account management.  All endpoints
+    fall under the /account path.
+"""
+# Library imports
+import functools
+
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
+
+# External imports
+import requests
 
 from flask import (
     abort, Blueprint, current_app, make_response, redirect, render_template,
     request, url_for
 )
-import requests
 
+# Local imports
 from portal.db import get_db
 
 bp = Blueprint('account', __name__, url_prefix='/account')

@@ -1,5 +1,15 @@
+"""
+__init__.py
+
+Author:     Sean Newman
+Created:    28 August 2018
+Description:
+    All application factories used for configuring and running the application.
+"""
+# Library imports
 import os
 
+# External imports
 from flask import Flask
 
 

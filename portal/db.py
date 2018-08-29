@@ -1,6 +1,17 @@
+"""
+db.py
+
+Author:     Sean Newman
+Created:    28 August 2018
+Description:
+    Functions and CLI commands for interacting with the database.
+"""
+# Library imports
 import sqlite3
 
+# External imports
 import click
+
 from flask import current_app, g
 from flask.cli import with_appcontext
 
