@@ -9,8 +9,12 @@ Description:
 """
 # Library imports
 import functools
+import smtplib
 
 from datetime import datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from os import environ
 from secrets import token_urlsafe
 
 # External imports
@@ -124,6 +128,27 @@ def new_code(user):
     return code
 
 
+def send_email(to_address, subject, body):
+    # Get configs
+    sender = current_app.config['EMAIL_ACCT']
+    sender_pass = environ['EMAIL_PASS']
+
+    # Prepare email
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = to_address
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Send email
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(sender, sender_pass)
+    text = msg.as_string()
+    server.sendmail(sender, to_address, text)
+    server.quit()
+
+
 def uncached_response(resp):
     # Add headers to tell everyone not to cache this response
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -173,18 +198,10 @@ def error():
     return render_template('account/error.html')
 
 
-@bp.route('/generate-code', methods=['GET'])
-@required_args(get_args=['user'])
-def generate_code():
-    # TODO email code instead of posting code
-    # TODO create UI for submitting email for code
-    return new_code(request.values['user'])
-
-
 @bp.route('/register', methods=['GET', 'POST'])
 @required_args(post_args=['code', 'fname', 'lname', 'email', 'password'])
 @requires_code(['GET', 'POST'])
-def create():
+def register():
     # Handle form submission
     if request.method == 'POST':
         # Send user creation request
@@ -212,5 +229,5 @@ def create():
 
 
 @bp.route('/success', methods=['GET'])
-def change_successful():
+def success():
     return render_template('account/success.html')

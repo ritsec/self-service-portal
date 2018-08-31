@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint
+    Blueprint, render_template
 )
 
 bp = Blueprint('ui', __name__)
@@ -10,4 +10,4 @@ bp = Blueprint('ui', __name__)
 ##
 @bp.route('/', methods=['GET'])
 def index():
-    return 'hello!'
+    return render_template('index.html')

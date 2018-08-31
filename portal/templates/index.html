@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+Welcome to the self-service portal.  What would you like to do today?<br>
+
+<!-- Account creation -->
+<form action="/account/register/email" method="get">
+    <label>Create a new RITSEC account</label>
+    <input type="submit" />
+</form>
+
+<!-- Password reset -->
+<form action="/account/change-password/email" method="get">
+    <label>Change your account password</label>
+    <input type="submit" />
+</form>
+
+{% endblock %}
