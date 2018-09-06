@@ -164,6 +164,7 @@ def uncached_response(resp):
 @required_args(post_args=['code', 'user', 'password'], get_args=['code'])
 @requires_code(methods=['POST', 'GET'])
 def change_password():
+    # TODO: add form to index page
     # Handle form submission
     if request.method == 'POST':
         # Send password change request
@@ -193,15 +194,23 @@ def change_password():
     return uncached_response(resp)
 
 
-@bp.route('/error', methods=['GET'])
-def error():
-    return render_template('account/error.html')
+@bp.route('/change-password/email', methods=['GET', 'POST'])
+@required_args(post_args=['username'])
+def change_password_email():
+    # TODO: add to index page
+    if request.method == 'POST':
+        # Check 
+        # Redirect to success page
+        return redirect(url_for('account.email_sent'))
+
+    # return render_template('account/change-password-email.html')
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 @required_args(post_args=['code', 'fname', 'lname', 'email', 'password'])
 @requires_code(['GET', 'POST'])
 def register():
+    # TODO: add to index page
     # Handle form submission
     if request.method == 'POST':
         # Send user creation request
@@ -222,12 +231,7 @@ def register():
             return redirect(url_for('account.error'))
 
     # Serve UI
-    resp = make_response(render_template(
-        'account/register.html', user=check_code(request.values['code'])
-    ))
+    # resp = make_response(render_template(
+    #     'account/register.html', user=check_code(request.values['code'])
+    # ))
     return uncached_response(resp)
-
-
-@bp.route('/success', methods=['GET'])
-def success():
-    return render_template('account/success.html')
