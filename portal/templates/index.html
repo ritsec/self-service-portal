@@ -3,17 +3,20 @@
 {% block title %}Home{% endblock %}
 
 {% block body %}
+<h1>RITSEC Self-Service Portal</h1>
 Welcome to the self-service portal.  What would you like to do today?<br>
 
 <!-- Account creation -->
-<form action="/account/register/email" method="get">
-    <label>Create a new RITSEC account</label>
+<h2>Create a new RITSEC account</h2>
+<form action="/account/register" method="get">
+    <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
     <input type="submit" />
 </form>
 
 <!-- Password reset -->
-<form action="/account/change-password/email" method="get">
-    <label>Change your account password</label>
+<h2>Change your account password</h2>
+<form action="/account/change-password" method="get">
+    <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
     <input type="submit" />
 </form>
 
