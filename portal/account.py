@@ -187,23 +187,15 @@ def change_password():
         else:
             return redirect(url_for('account.error'))
 
-    # Serve UI
-    resp = make_response(render_template(
-        'account/change-password.html', user=check_code(request.values['code'])
-    ))
-    return uncached_response(resp)
-
 
 @bp.route('/change-password/email', methods=['GET', 'POST'])
 @required_args(post_args=['username'])
 def change_password_email():
     # TODO: add to index page
     if request.method == 'POST':
-        # Check 
+        # Check
         # Redirect to success page
         return redirect(url_for('account.email_sent'))
-
-    # return render_template('account/change-password-email.html')
 
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -229,9 +221,3 @@ def register():
             return redirect(url_for('account.success'))
         else:
             return redirect(url_for('account.error'))
-
-    # Serve UI
-    # resp = make_response(render_template(
-    #     'account/register.html', user=check_code(request.values['code'])
-    # ))
-    return uncached_response(resp)
