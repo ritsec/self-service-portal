@@ -44,8 +44,8 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # Set up blueprints
-    from . import ui
-    app.register_blueprint(ui.bp)
+    from . import root
+    app.register_blueprint(root.bp)
     app.add_url_rule('/', endpoint='index')
 
     from . import account

@@ -8,14 +8,16 @@ Welcome to the self-service portal.  What would you like to do today?<br>
 
 <!-- Account creation -->
 <h2>Create a new RITSEC account</h2>
-<form action="/account/register" method="get">
+<form action="/email" method="POST">
+    <input name="type" type="hidden" value="account.register" />
     <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
     <input type="submit" />
 </form>
 
 <!-- Password reset -->
 <h2>Change your account password</h2>
-<form action="/account/change-password" method="get">
+<form action="/email" method="POST">
+    <input name="type" type="hidden" value="account.change-password" />
     <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
     <input type="submit" />
 </form>
