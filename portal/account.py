@@ -50,14 +50,14 @@ def change_password():
             host=current_app.config['WEBCMD_HOST'],
             port=current_app.config['WEBCMD_PORT'],
         ), data={
-            'username': request.values['user'],
-            'new_password': request.values['password'],
+            'username': request.form['user'],
+            'new_password': request.form['password'],
         })
         if resp.status_code == 200:
             db = get_db()
             db.execute(
                 'DELETE FROM EMAIL_CODE WHERE code = ?',
-                (request.values['code'], )
+                (request.form['code'], )
             )
             db.commit()
             return redirect(url_for('account.success'))
@@ -66,25 +66,33 @@ def change_password():
 
 
 @bp.route('/register', methods=['GET', 'POST'])
-@required_args(post_args=['code', 'fname', 'lname', 'email', 'password'])
+@required_args(
+    post_args=['code', 'fname', 'lname', 'email', 'password'],
+    get_args=['code']
+)
 @requires_code(['GET', 'POST'])
 def register():
     # TODO: add to index page
     # Handle form submission
     if request.method == 'POST':
         # Send user creation request
+        resp = requests.post(current_app.config['WEBCMD_URL'], data={
+            'fname': request.form['fname'],
+            'lname': request.form['lname'],
+            'email': request.form['email']
+        })
         resp = requests.post('{schema}://{host}:{port}'.format(
             schema=current_app.config['WEBCMD_SCHEMA'],
             host=current_app.config['WEBCMD_HOST'],
             port=current_app.config['WEBCMD_PORT'],
         ), data={
-            'fname': request.values['fname'],
-            'lname': request.values['lname'],
-            'email': request.values['email'],
+            'fname': request.form['fname'],
+            'lname': request.form['lname'],
+            'email': request.form['email'],
         })
 
         if resp.status_code == 200:
-            delete_code(request.values['code'])
+            delete_code(request.form['code'])
             return redirect(url_for('account.success'))
         else:
             return redirect(url_for('account.error'))

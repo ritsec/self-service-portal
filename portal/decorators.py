@@ -29,12 +29,12 @@ class required_args(object):
         def wrapped_route(*args, **kwargs):
             if request.method == 'GET' and isinstance(self.get_args, list):
                 for key in self.get_args:
-                    if key not in request.values:
+                    if key not in request.args:
                         abort(400)
 
             elif request.method == 'POST' and isinstance(self.post_args, list):
                 for key in self.post_args:
-                    if key not in request.values:
+                    if key not in request.form:
                         abort(400)
 
             return route(*args, **kwargs)
