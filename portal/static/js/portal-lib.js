@@ -6,7 +6,7 @@
  */
 function flash(message, error) {
     // TODO: don't use alerts, flash a pretty box to the user
-    if(error) {
+    if (error) {
         alert('Error:' + message);
     } else {
         alert(message);
@@ -23,8 +23,32 @@ function flash(message, error) {
  * response data
  */
 function post(endpoint, body, callback) {
-    let xhr = XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('POST', endpoint);
     xhr.onload = callback;
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.send(body);
+}
+
+/**
+ * Serializes the contents of an HTML form element in the format of the
+ * application/x-www-form-urlencoded MIME type.  This function will only
+ * process "text", "password", and "hidden" input types.
+ * 
+ * @param {HTMLElement} formElement - The form element to serialize the
+ * contents of
+ */
+function serializeForm(formElement) {
+    let formValues = ''
+    for (let idx = 0, element; element = formElement.elements[idx++];) {
+        if (element.type === 'text' || 
+            element.type === 'password' ||
+            element.type === 'hidden') {
+            formValues += element.name + '=' + element.value + '&';
+        }
+    }
+    // Remove trailing ampersand and encode properly
+    formValues = formValues.substring(0, formValues.length - 1);
+    // return encodeURIComponent(formValues);
+    return formValues;
 }

@@ -3,8 +3,8 @@
 {% block title %}Home{% endblock %}
 
 {% block head %}
-<script src="{{ url_for('static', 'js/portal-lib.js') }}" type="text/javascript" charset="utf-8"></script>
-<script src="{{ url_for('static', 'js/index.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/portal-lib.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block body %}
@@ -13,18 +13,18 @@ Welcome to the self-service portal.  What would you like to do today?<br>
 
 <!-- Account creation -->
 <h2>Create a new RITSEC account</h2>
-<form action="/email" method="POST">
-    <input name="type" type="hidden" value="account.register" />
-    <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
-    <input type="submit" />
+<form id="account_register">
+  <input name="type" type="hidden" value="account.register" />
+  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
+  <input type="submit" />
 </form>
 
 <!-- Password reset -->
 <h2>Change your account password</h2>
-<form action="/email" method="POST">
-    <input name="type" type="hidden" value="account.change-password" />
-    <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
-    <input type="submit" />
+<form id="account_change-password">
+  <input name="type" type="hidden" value="account.change-password" />
+  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
+  <input type="submit" />
 </form>
 
 {% endblock %}
