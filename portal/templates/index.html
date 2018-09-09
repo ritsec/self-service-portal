@@ -2,6 +2,11 @@
 
 {% block title %}Home{% endblock %}
 
+{% block head %}
+<script src="{{ url_for('static', 'js/portal-lib.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', 'js/index.js') }}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
 {% block body %}
 <h1>RITSEC Self-Service Portal</h1>
 Welcome to the self-service portal.  What would you like to do today?<br>
