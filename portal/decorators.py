@@ -11,7 +11,9 @@ Description:
 import functools
 
 # External imports
-from flask import abort
+from flask import (
+    abort, request
+)
 
 
 class required_args(object):

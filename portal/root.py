@@ -13,11 +13,12 @@ import smtplib
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from os import environ
 from secrets import token_urlsafe
 
 # External imports
 from flask import (
-    abort, Blueprint, current_app, jsonify, render_template
+    abort, Blueprint, current_app, jsonify, render_template, request
 )
 
 # Local imports
