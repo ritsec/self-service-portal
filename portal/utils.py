@@ -110,4 +110,3 @@ def send_email(to_address, subject, body):
     text = msg.as_string()
     server.sendmail(sender, to_address, text)
     server.quit()
-

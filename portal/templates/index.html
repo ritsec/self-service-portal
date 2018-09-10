@@ -9,13 +9,13 @@
 
 {% block body %}
 <h1>RITSEC Self-Service Portal</h1>
-Welcome to the self-service portal.  What would you like to do today?<br>
+<p>Welcome to the self-service portal.  What would you like to do today?</p>
 
 <!-- Account creation -->
 <h2>Create a new RITSEC account</h2>
 <form id="account_register">
   <input name="type" type="hidden" value="account.register" />
-  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
+  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br />
   <input type="submit" />
 </form>
 
@@ -23,8 +23,7 @@ Welcome to the self-service portal.  What would you like to do today?<br>
 <h2>Change your account password</h2>
 <form id="account_change-password">
   <input name="type" type="hidden" value="account.change-password" />
-  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br>
+  <input name="email" placeholder="abc1234@rit.edu" type="text" required /><br />
   <input type="submit" />
 </form>
-
 {% endblock %}
