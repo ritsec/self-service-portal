@@ -12,8 +12,11 @@ import functools
 
 # External imports
 from flask import (
-    abort, request
+    abort, g, request
 )
+
+# Internal imports
+from portal.utils import check_email_code
 
 
 class required_args(object):
@@ -57,8 +60,11 @@ class requires_code(object):
         @functools.wraps(route)
         def wrapped_route(*args, **kwargs):
             if request.method in self.methods:
-                if not check_code(request.values['code']):
+                user = check_email_code(request.values['code'])
+                if not user:
                     abort(403)
+                else:
+                    g.user = user
 
             return route(*args, **kwargs)
         return wrapped_route
