@@ -43,10 +43,8 @@ def change_password():
     # Handle form submission
     if request.method == 'POST':
         # Send password change request
-        resp = requests.post('{schema}://{host}:{port}/change-password'.format(
-            schema=current_app.config['WEBCMD_SCHEMA'],
-            host=current_app.config['WEBCMD_HOST'],
-            port=current_app.config['WEBCMD_PORT'],
+        resp = requests.post('{url}/change-password'.format(
+            url=current_app.config['WEBCMD_URL'],
         ), data={
             'username': g.user,
             'new_password': request.form['password'],
@@ -83,15 +81,8 @@ def register():
     # Handle form submission
     if request.method == 'POST':
         # Send user creation request
-        resp = requests.post(current_app.config['WEBCMD_URL'], data={
-            'fname': request.form['fname'],
-            'lname': request.form['lname'],
-            'email': g.user
-        })
-        resp = requests.post('{schema}://{host}:{port}'.format(
-            schema=current_app.config['WEBCMD_SCHEMA'],
-            host=current_app.config['WEBCMD_HOST'],
-            port=current_app.config['WEBCMD_PORT'],
+        resp = requests.post('{url}/register'.format(
+            url=current_app.config['WEBCMD_URL']
         ), data={
             'fname': request.form['fname'],
             'lname': request.form['lname'],
