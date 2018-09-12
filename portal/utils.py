@@ -94,7 +94,10 @@ def new_code(user):
 def send_email(to_address, subject, body):
     # Get configs
     sender = current_app.config['EMAIL_ACCT']
-    sender_pass = environ['EMAIL_PASS']
+    try:
+        sender_pass = environ['EMAIL_PASS']
+    except KeyError:
+        return False
 
     # Prepare email
     msg = MIMEMultipart()
@@ -110,3 +113,4 @@ def send_email(to_address, subject, body):
     text = msg.as_string()
     server.sendmail(sender, to_address, text)
     server.quit()
+    return True
