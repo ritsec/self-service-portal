@@ -11,7 +11,7 @@
  */
 function passwordsMatch(formElement) {
     let password = formElement.querySelector('#password');
-    let confirm = formElement.querySelector('#password');
+    let confirm = formElement.querySelector('#confirm-password');
     if (password instanceof HTMLElement && confirm instanceof HTMLElement && 
         password.value === confirm.value) {
             return true;
