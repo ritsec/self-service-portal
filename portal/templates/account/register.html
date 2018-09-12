@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Registration{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/portal-lib.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/register.js') }}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block body %}
+<h1>RITSEC Account Registration</h1>
+<p>Please fill out the following form to create a new RITSEC account for {{ username }}</p>
+<form id="register">
+  <input name="code" type="hidden" value="{{ email_code }}" />
+  <input name="fname" placeholder="First Name" type="text" required /><br />
+  <input name="lname" placeholder="Last Name" type="text" required /><br />
+  <input id="password" name="password" placeholder="Password" type="password" required /><br />
+  <input id="confirm-password" placeholder="Confirm Password" type="password" required /><br />
+  <input type="submit" />
+</form>
+{% endblock %}

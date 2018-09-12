@@ -7,15 +7,8 @@ function emailFormSubmit(event) {
     post(
         '/email',
         serializeForm(event.target),
-        function() {
-            response = JSON.parse(this.response);
-            if (this.status == 400) {
-                flash(response.status, true);
-            } else {
-                flash(response.status);
-            }
-        }
-    )
+        checkResponse
+    );
 }
 
 window.onload = function() {

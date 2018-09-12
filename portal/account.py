@@ -7,14 +7,12 @@ Description:
     Endpoints and functions that relate to account management.  All endpoints
     fall under the /account path.
 """
-# Library imports
-from os import environ
-
 # External imports
 import requests
 
 from flask import (
-    abort, Blueprint, current_app, make_response, redirect, request, url_for
+    abort, Blueprint, current_app, g, jsonify, make_response, redirect,
+    render_template, request, url_for
 )
 
 # Internal imports
@@ -38,7 +36,7 @@ def uncached_response(resp):
 #   Routes
 ##
 @bp.route('/change-password', methods=['GET', 'POST'])
-@required_args(post_args=['code', 'user', 'password'], get_args=['code'])
+@required_args(post_args=['code', 'password'], get_args=['code'])
 @requires_code(methods=['POST', 'GET'])
 def change_password():
     # TODO: add form to index page
@@ -50,7 +48,7 @@ def change_password():
             host=current_app.config['WEBCMD_HOST'],
             port=current_app.config['WEBCMD_PORT'],
         ), data={
-            'username': request.form['user'],
+            'username': g.user,
             'new_password': request.form['password'],
         })
         if resp.status_code == 200:
@@ -60,14 +58,23 @@ def change_password():
                 (request.form['code'], )
             )
             db.commit()
-            return redirect(url_for('account.success'))
+            return jsonify({'status': 'success'}), 200
         else:
-            return redirect(url_for('account.error'))
+            return jsonify({
+                'status': 'failure occurred at user creation agent'
+            }), 500
+
+    # Serve password reset form
+    return render_template(
+        'account/change-password.html',
+        username=g.user,
+        email_code=request.args['code']
+    )
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 @required_args(
-    post_args=['code', 'fname', 'lname', 'email', 'password'],
+    post_args=['code', 'fname', 'lname', 'password'],
     get_args=['code']
 )
 @requires_code(['GET', 'POST'])
@@ -79,7 +86,7 @@ def register():
         resp = requests.post(current_app.config['WEBCMD_URL'], data={
             'fname': request.form['fname'],
             'lname': request.form['lname'],
-            'email': request.form['email']
+            'email': g.user
         })
         resp = requests.post('{schema}://{host}:{port}'.format(
             schema=current_app.config['WEBCMD_SCHEMA'],
@@ -88,11 +95,20 @@ def register():
         ), data={
             'fname': request.form['fname'],
             'lname': request.form['lname'],
-            'email': request.form['email'],
+            'email': g.user
         })
 
         if resp.status_code == 200:
             delete_code(request.form['code'])
-            return redirect(url_for('account.success'))
+            return jsonify({'status': 'success'}), 200
         else:
-            return redirect(url_for('account.error'))
+            return jsonify({
+                'status': 'failure occurred at user creation agent'
+            }), 500
+
+    # Serve registration form
+    return render_template(
+        'account/register.html',
+        username=g.user,
+        email_code=request.args['code']
+    )
