@@ -46,7 +46,7 @@ def change_password():
         resp = requests.post('{url}/change-password'.format(
             url=current_app.config['WEBCMD_URL'],
         ), data={
-            'username': g.user,
+            'email': g.user,
             'new_password': request.form['password'],
         })
         if resp.status_code == 200:
@@ -86,7 +86,8 @@ def register():
         ), data={
             'fname': request.form['fname'],
             'lname': request.form['lname'],
-            'email': g.user
+            'email': g.user,
+            'password': request.form['password']
         })
 
         if resp.status_code == 200:
