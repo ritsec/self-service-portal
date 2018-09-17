@@ -16,6 +16,16 @@ Finally, run the server with `flask run`.  The test server will run locally on
 port 5000, and the PIN to the debugger will be printed in the output once the
 server starts.
 
+## Deployment
+If you want to test deployment, there's little you have to change.  In
+production this is _way_ different though.
+
+In production, make sure to change the following things:
+
+- `cert.pem`
+- `key.pem`
+- `server_name` configuration in `portal.conf` for the proxy
+
 ## Compatibility Note
 Some of the Javascript in this app (specifically the use of
 Array.prototype.indexOf()) is not supported in Internet Explorer versions 8 and
