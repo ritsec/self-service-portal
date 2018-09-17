@@ -1,7 +1,7 @@
 version: '3'
 services:
 
-  portal-app
+  portal-app:
     build: portal-app
     image: portal-app
     expose:
