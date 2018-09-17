@@ -1,0 +1,20 @@
+version: '3'
+services:
+
+  portal-app
+    build: portal-app
+    image: portal-app
+    expose:
+      - "8000"
+    restart: always
+
+  proxy:
+    build: proxy
+    image: proxy
+    expose:
+      - "443"
+    ports:
+      - "443:443"
+    restart: always
+    depends_on:
+      - portal-app
