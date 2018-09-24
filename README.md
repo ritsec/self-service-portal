@@ -54,7 +54,7 @@ to the following requirements:
   * `email`: The `@rit.edu`, `@g.rit.edu`, or `@mail.rit.edu` email address of
     the user whose password should be changed
   * `new_password`: The new password for the user
-- Accepts POST data with the `application/x-www-form-urlencoded` MIME type
+- Accepts POST data with the `application/json` MIME type
 - Returns a 200 status code _only if_ the operation was successful
 - Returns anything else (preferably code 400+) if the operation was not
   completed

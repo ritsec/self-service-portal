@@ -45,7 +45,7 @@ def change_password():
         # Send password change request
         resp = requests.post('{url}/change-password'.format(
             url=current_app.config['WEBCMD_URL'],
-        ), data={
+        ), json={
             'email': g.user,
             'new_password': request.form['password'],
         })
@@ -83,7 +83,7 @@ def register():
         # Send user creation request
         resp = requests.post('{url}/register'.format(
             url=current_app.config['WEBCMD_URL']
-        ), data={
+        ), json={
             'fname': request.form['fname'],
             'lname': request.form['lname'],
             'email': g.user,
