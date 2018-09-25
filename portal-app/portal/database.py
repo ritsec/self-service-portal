@@ -7,7 +7,7 @@ Description:
     Functions and CLI commands for interacting with the database.
 """
 # Library imports
-from datetime.datetime import utcnow
+from datetime import datetime as dt
 
 # External imports
 import click
@@ -21,5 +21,5 @@ db = SQLAlchemy()
 class EmailCode(db.Model):
     value = db.Column(db.Text, unique=True, nullable=False, primary_key=True)
     user = db.Column(db.Text, nullable=False)
-    created = db.Column(db.DateTime, nullable=False, server_default=utcnow)
+    created = db.Column(db.DateTime, nullable=False, default=dt.utcnow)
     expires = db.Column(db.DateTime)
