@@ -27,7 +27,7 @@ function passwordsMatch(formElement) {
  * @param {boolean} error - should be set to true if the message is an error
  */
 function flash(message, error) {
-    // TODO: don't use alerts, flash a pretty box to the user
+    // FIXME: don't use alerts, flash a pretty box to the user
     if (error) {
         alert('Error:' + message);
     } else {

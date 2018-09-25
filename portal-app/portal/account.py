@@ -39,7 +39,6 @@ def uncached_response(resp):
 @required_args(post_args=['code', 'password'], get_args=['code'])
 @requires_code(methods=['POST', 'GET'])
 def change_password():
-    # TODO: add form to index page
     # Handle form submission
     if request.method == 'POST':
         # Send password change request
@@ -77,7 +76,6 @@ def change_password():
 )
 @requires_code(['GET', 'POST'])
 def register():
-    # TODO: add to index page
     # Handle form submission
     if request.method == 'POST':
         # Send user creation request

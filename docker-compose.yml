@@ -10,6 +10,7 @@ services:
     environment:
       EMAIL_PASS: ""
 
+  # TODO: create database container
   proxy:
     build: proxy
     image: proxy
