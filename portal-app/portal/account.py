@@ -17,6 +17,7 @@ from flask import (
 
 # Internal imports
 from portal.decorators import required_args, requires_code
+from portal.utils import delete_code, get_user_id
 
 bp = Blueprint('account', __name__, url_prefix='/account')
 
@@ -41,20 +42,21 @@ def uncached_response(resp):
 def change_password():
     # Handle form submission
     if request.method == 'POST':
+        # Remove the code
+        delete_code(requests.form['code'])
+
+        # Get user ID
+        user_id = get_user_id(g.user)
+
         # Send password change request
-        resp = requests.post('{url}/change-password'.format(
-            url=current_app.config['WEBCMD_URL'],
+        resp = requests.put('{url}/users/{id}'.format(
+            url=current_app.config[''],
+            id=user_id,
         ), json={
             'email': g.user,
-            'new_password': request.form['password'],
+            'password': request.form['password'],
         })
         if resp.status_code == 200:
-            db = get_db()
-            db.execute(
-                'DELETE FROM EMAIL_CODE WHERE code = ?',
-                (request.form['code'], )
-            )
-            db.commit()
             return jsonify({'status': 'success'}), 200
         else:
             return jsonify({
@@ -71,29 +73,31 @@ def change_password():
 
 @bp.route('/register', methods=['GET', 'POST'])
 @required_args(
-    post_args=['code', 'fname', 'lname', 'password'],
+    post_args=['code', 'username', 'fname', 'lname', 'password'],
     get_args=['code']
 )
 @requires_code(['GET', 'POST'])
 def register():
     # Handle form submission
     if request.method == 'POST':
+        # Delete the code
+        delete_code(request.form['code'])
+
         # Send user creation request
-        resp = requests.post('{url}/register'.format(
-            url=current_app.config['WEBCMD_URL']
+        resp = requests.post('{url}/users'.format(
+            url=current_app.config['GITLAB_URL']
         ), json={
-            'fname': request.form['fname'],
-            'lname': request.form['lname'],
             'email': g.user,
-            'password': request.form['password']
+            'password': request.form['password'],
+            'username': request.form['username'],
+            'name': f'{request.form["fname"].title()} {request.form["lname"]}',
         })
 
-        if resp.status_code == 200:
-            delete_code(request.form['code'])
-            return jsonify({'status': 'success'}), 200
+        if resp.status_code == 201:
+            return jsonify({'status': 'success'}), 201
         else:
             return jsonify({
-                'status': 'failure occurred at user creation agent'
+                'status': 'failed to create user'
             }), 500
 
     # Serve registration form
