@@ -50,7 +50,6 @@ def get_user_id(email):
         url=current_app.config['GITLAB_URL'],
         email=email,
     ), headers={'Private-Token': token=environ['GITLAB_API_TOKEN']})
-    # TODO: document gitlab api token env var
 
     # Make sure we only got one response
     if len(resp.json()) > 1:
@@ -107,7 +106,6 @@ def new_code(user):
     code = token_urlsafe(64)
 
     # Get timestamp of 4 hours from now
-    # TODO: update documentation
     expiry = datetime.now() + timedelta(hours=4)
 
     # Add code to database
