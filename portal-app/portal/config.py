@@ -42,16 +42,15 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    # TODO: add environment vars to master config file
     SECRET_KEY = attempt_get_env('PORTAL_SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{password}@{host}/{db}'.format(
-        user=attempt_get_env('SQL_USERNAME'),
-        password=attempt_get_env('SQL_PASSWORD'),
+        user=attempt_get_env('MYSQL_USER'),
+        password=attempt_get_env('MYSQL_PASSWORD'),
         host=attempt_get_env('SQL_HOST'),
-        db=attempt_get_env('SQL_DB_NAME'),
+        db=attempt_get_env('MYSQL_DATABASE'),
     )
-    APP_URL = attempt_get_env('FRONTEND_URL')
-    GITLAB_URL = attempt_get_env('GITLAB_URL')
+    APP_URL = f'https://{attempt_get_env('FRONTEND_URL')}'
+    GITLAB_URL = f'https://{attempt_get_env('GITLAB_URL')}/api/v4'
 
 
 def get_config():
