@@ -21,32 +21,28 @@ from flask import (
 )
 
 # Local imports
-from portal.db import get_db
+from portal.database import db, EmailCode
 
 
 def check_email_code(code):
-    db = get_db()
-
     # Check if code is in database
-    entry = db.execute(
-        'SELECT * FROM EMAIL_CODE WHERE val = ?', (code, )
-    ).fetchone()
+    entry = EmailCode.query.filter_by(value=code).all()
     if entry is None:
         return False
 
-    expiration = datetime.fromtimestamp(int(entry['expires']))
+    expiration = datetime.fromtimestamp(int(entry.expires))
 
     # Make sure code is not expired
     if expiration < datetime.now():
         return False
 
-    return entry['user']
+    return entry.user
 
 
 def delete_code(code):
-    db = get_db()
-    db.execute('DELTE FROM EMAIL_CODE WHERE val = ?', (code, ))
-    db.commit()
+    target = EmailCode.query.filter_by(value=code).first()
+    db.session.delete(target)
+    db.session.commit()
 
 
 def make_email_body(req_1, req_2, code, path):
@@ -74,19 +70,16 @@ def make_email_body(req_1, req_2, code, path):
 
 
 def new_code(user):
-    # Generate securely random 32-byte base64 encoded url-safe string
-    code = token_urlsafe(32)
+    # Generate securely random 32-byte base64 encoded url-safe string.  We
+    # assume there will be no duplicates of these.
+    code = token_urlsafe(64)
 
-    # Get timestamp of tomorrow
-    tomorrow = datetime.now() + timedelta(days=1)
-    tomorrow = tomorrow.timestamp()
+    # Get timestamp of 4 hours from now
+    # TODO: update documentation
+    expiry = (datetime.now() + timedelta(hours=4)).timestamp()
 
     # Add code to database
-    db = get_db()
-    db.execute(
-        'INSERT INTO EMAIL_CODE (val, user, expires) VALUES (?, ?, ?)',
-        (code, user, tomorrow)
-    )
+    db.session.add(User(code, user, tomorrow))
     db.commit()
     return code
 
