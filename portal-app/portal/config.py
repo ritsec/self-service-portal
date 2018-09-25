@@ -38,7 +38,7 @@ class DevelopmentConfig(Config):
     SECRET_KEY = 'dev'
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # In-memory SQLite database
     APP_URL = 'http://localhost:5000'
-    GITLAB_URL = 'http://localhost:5000'
+    GITLAB_URL = 'http://localhost:5000/api/v4'
 
 
 class ProductionConfig(Config):
