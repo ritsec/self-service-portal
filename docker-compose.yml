@@ -7,6 +7,8 @@ services:
     expose:
       - "8000"
     restart: always
+    environment:
+      EMAIL_PASS: ""
 
   proxy:
     build: proxy
@@ -14,7 +16,7 @@ services:
     expose:
       - "443"
     ports:
-      - "443:443"
+      - "0.0.0.0:443:443"
     restart: always
     depends_on:
       - portal-app
