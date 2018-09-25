@@ -8,10 +8,11 @@ Description:
 """
 # External imports
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 # Internal imports
 from .config import get_config
-from .database import db
+from .database import init_db
 
 
 def create_app():
@@ -20,7 +21,7 @@ def create_app():
     app.config.from_object(get_config())
 
     # Set up database
-    db.init_app(app)
+    init_db(app)
 
     # Set up blueprints
     from . import root

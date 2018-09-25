@@ -23,3 +23,9 @@ class EmailCode(db.Model):
     user = db.Column(db.Text, nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=dt.utcnow)
     expires = db.Column(db.DateTime)
+
+
+def init_db(app):
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()

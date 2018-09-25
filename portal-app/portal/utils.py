@@ -40,8 +40,7 @@ def check_email_code(code):
 
 
 def delete_code(code):
-    target = EmailCode.query.filter_by(value=code).first()
-    db.session.delete(target)
+    db.session.delete(EmailCode.query.filter_by(value=code).first())
     db.session.commit()
 
 
@@ -76,11 +75,11 @@ def new_code(user):
 
     # Get timestamp of 4 hours from now
     # TODO: update documentation
-    expiry = (datetime.now() + timedelta(hours=4)).timestamp()
+    expiry = datetime.now() + timedelta(hours=4)
 
     # Add code to database
-    db.session.add(User(code, user, tomorrow))
-    db.commit()
+    db.session.add(EmailCode(value=code, user=user, expires=expiry))
+    db.session.commit()
     return code
 
 
