@@ -1,16 +1,27 @@
 version: '3'
 services:
 
+  mysql:
+    image: mysql
+    expose:
+      - "3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    restart: always
+    env_file:
+      - portal.env
+
   portal-app:
     build: portal-app
     image: portal-app
     expose:
       - "8000"
     restart: always
-    environment:
-      EMAIL_PASS: ""
+    env_file:
+      - portal.env
+    depends_on:
+      - mysql
 
-  # TODO: create database container
   proxy:
     build: proxy
     image: proxy
