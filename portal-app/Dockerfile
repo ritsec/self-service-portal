@@ -27,6 +27,3 @@ ENV FLASK_APP portal
 
 # Copy over application files
 COPY portal ./portal
-
-# Initialize the database
-RUN flask init-db
