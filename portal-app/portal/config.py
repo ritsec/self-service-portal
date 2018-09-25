@@ -13,6 +13,18 @@ from os import environ, path
 from flask import current_app
 
 
+def attempt_get_env(name):
+    """This exists so we can declare the use of environment variables (see the
+    ProductionConfig below) without Flask throwing KeyErrors left and right
+    in development."""
+    try:
+        variable = environ[name]
+    except KeyError:
+        variable = ''
+    finally:
+        return variable
+
+
 class Config():
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''  # Used by sqlalchemy to create the engine
@@ -30,15 +42,15 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     # TODO: add environment vars to master config file
-    SECRET_KEY = environ['PORTAL_SECRET_KEY']
+    SECRET_KEY = attempt_get_env('PORTAL_SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{password}@{host}/{db}'.format(
-        user=environ['SQL_USERNAME']
-        password=environ['SQL_PASSWORD']
-        host=environ['SQL_HOST']
-        db=environ['SQL_DB_NAME']
+        user=attempt_get_env('SQL_USERNAME'),
+        password=attempt_get_env('SQL_PASSWORD'),
+        host=attempt_get_env('SQL_HOST'),
+        db=attempt_get_env('SQL_DB_NAME'),
     )
-    APP_URL = environ['FRONTEND_URL']
-    GITLAB_URL = environ['GITLAB_URL']
+    APP_URL = attempt_get_env('FRONTEND_URL')
+    GITLAB_URL = attempt_get_env('GITLAB_URL')
 
 
 def get_config():
