@@ -7,35 +7,26 @@ Description:
     All application factories used for configuring and running the application.
 """
 # Library imports
-import os
+from os import environ
 
 # External imports
 from flask import Flask
 
+# Internal imports
+from . import config
 
-def create_app(test_config=None):
-    # Create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'portal.db'),
-        APP_URL='http://localhost:5000',
-        WEBCMD_URL='http://localhost:5000',
-        EMAIL_ACCT='ritsecclub@gmail.com',
-    )
 
-    if test_config is None:
-        # Load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # Load the test config if passed on
-        app.config.from_mapping(test_config)
-
-    # Ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+def create_app():
+    # Create and configure the app.  Note that the FLASK_ENV variable is set,
+    # which is noticed by Flask's Click setup.  If you run Flask with docker,
+    # then there are more options.  However, the command-line initialization
+    # only recognizes 'development' and 'production'.
+    app = Flask(__name__)
+    env = environ['FLASK_ENV']
+    if env == 'development':
+        app.config.from_object(config.DevelopmentConfig)
+    elif env == 'production':
+        app.config.from_object(config.ProductionConfig)
 
     # Set up database
     from . import db
