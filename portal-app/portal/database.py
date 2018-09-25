@@ -8,6 +8,7 @@ Description:
 """
 # Library imports
 from datetime import datetime as dt
+from os import environ
 
 # External imports
 import click
@@ -19,13 +20,24 @@ db = SQLAlchemy()
 
 
 class EmailCode(db.Model):
-    value = db.Column(db.Text, unique=True, nullable=False, primary_key=True)
+    value = db.Column(
+        db.String(200),
+        unique=True,
+        nullable=False,
+        primary_key=True
+    )
     user = db.Column(db.Text, nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=dt.utcnow)
     expires = db.Column(db.DateTime)
 
 
 def init_db(app):
-    with app.app_context():
-        db.init_app(app)
+    with app.app_context():            
+        while True:
+            try:
+                db.init_app(app)
+            except Exception:
+                pass
+            else:
+                break
         db.create_all()

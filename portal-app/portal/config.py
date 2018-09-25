@@ -49,8 +49,8 @@ class ProductionConfig(Config):
         host=attempt_get_env('SQL_HOST'),
         db=attempt_get_env('MYSQL_DATABASE'),
     )
-    APP_URL = f'https://{attempt_get_env('FRONTEND_URL')}'
-    GITLAB_URL = f'https://{attempt_get_env('GITLAB_URL')}/api/v4'
+    APP_URL = f'https://{attempt_get_env("FRONTEND_URL")}'
+    GITLAB_URL = f'https://{attempt_get_env("GITLAB_URL")}/api/v4'
 
 
 def get_config():

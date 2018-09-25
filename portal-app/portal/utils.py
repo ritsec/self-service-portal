@@ -49,7 +49,7 @@ def get_user_id(email):
     resp = requests.get('{url}/users?search={email}'.format(
         url=current_app.config['GITLAB_URL'],
         email=email,
-    ), headers={'Private-Token': token=environ['GITLAB_API_TOKEN']})
+    ), headers={'Private-Token': environ['GITLAB_API_TOKEN']})
 
     # Make sure we only got one response
     if len(resp.json()) > 1:

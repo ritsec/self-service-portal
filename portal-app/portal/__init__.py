@@ -6,6 +6,9 @@ Created:    28 August 2018
 Description:
     All application factories used for configuring and running the application.
 """
+# Library imports
+import time
+
 # External imports
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +24,7 @@ def create_app():
     app.config.from_object(get_config())
 
     # Set up database
+    time.sleep(10)  # Wait for container
     init_db(app)
 
     # Set up blueprints

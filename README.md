@@ -23,6 +23,11 @@ values.  Then, simply run `sudo docker-compose up` in the root directory.
 You're good to go!  The portal is listening on IPv4 port 443 on the docker
 host.
 
+## Database Note
+This cannot be scaled to multiple instances of the Flask container at the
+moment.  SQLAlchemy is not configured to check if the database has been
+configured yet.
+
 ## Compatibility Note
 Some of the Javascript in this app (specifically the use of
 Array.prototype.indexOf()) is not supported in Internet Explorer versions 8 and

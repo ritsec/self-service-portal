@@ -9,7 +9,7 @@ WORKDIR /self-service
 # Install packages required to build uWSGI
 # RUN apk --update add build-base linux-headers
 RUN apt-get update -y
-RUN apt-get install -y build-essential python-dev
+RUN apt-get install -y build-essential python-dev default-libmysqlclient-dev
 
 # Install pip requirements
 COPY requirements.txt ./requirements.txt
