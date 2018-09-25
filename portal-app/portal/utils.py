@@ -26,11 +26,11 @@ from portal.database import db, EmailCode
 
 def check_email_code(code):
     # Check if code is in database
-    entry = EmailCode.query.filter_by(value=code).all()
+    entry = EmailCode.query.filter_by(value=code).first()
     if entry is None:
         return False
 
-    expiration = datetime.fromtimestamp(int(entry.expires))
+    expiration = entry.expires
 
     # Make sure code is not expired
     if expiration < datetime.now():
