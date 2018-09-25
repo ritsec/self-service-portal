@@ -21,6 +21,17 @@ function passwordsMatch(formElement) {
 }
 
 /**
+ * Checks a form element to make sure the password field is at least 8
+ * characters long to make GitLab happy.
+ * 
+ * @param {HTMLElement} formElement - the form whose password field should be
+ * checked
+ */
+function validPassword(formElement) {
+    return formElement.querySelector('#password').value.length >= 8;
+}
+
+/**
  * Flashes a message to the user.
  * 
  * @param {string} message - the message to be flashed
