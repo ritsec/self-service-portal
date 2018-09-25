@@ -9,13 +9,21 @@
 
 {% block body %}
 <h1>RITSEC Account Registration</h1>
-<p>Please fill out the following form to create a new RITSEC account for {{ username }}</p>
+<p>Please fill out the following form to create a new RITSEC GitLab account for {{ username }}</p>
 <form id="register">
   <input name="code" type="hidden" value="{{ email_code }}" />
+  <input name="username" placeholder="Username" type="text" required /><br />
   <input name="fname" placeholder="First Name" type="text" required /><br />
   <input name="lname" placeholder="Last Name" type="text" required /><br />
   <input id="password" name="password" placeholder="Password" type="password" required /><br />
   <input id="confirm-password" placeholder="Confirm Password" type="password" required /><br />
   <input type="submit" />
 </form>
+<p>
+  Once you create your account, please go to
+  <a href="https://gitlab.ritsec.club">our GitLab</a> and log in with your new
+  username and password using the "Standard" tab on the login page.  You will
+  be required to change your password.  This <em>new password</em>that you set
+  will be your account password going forward!
+</p>
 {% endblock %}

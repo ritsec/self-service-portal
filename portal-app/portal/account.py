@@ -53,7 +53,6 @@ def change_password():
             url=current_app.config[''],
             id=user_id,
         ), json={
-            'email': g.user,
             'password': request.form['password'],
         })
         if resp.status_code == 200:
@@ -95,6 +94,10 @@ def register():
 
         if resp.status_code == 201:
             return jsonify({'status': 'success'}), 201
+        elif resp.json['message'] == 'Username has already been taken':
+            return jsonify({
+                'status': 'username taken!'
+            }), 420  # haha I'm hilarious
         else:
             return jsonify({
                 'status': 'failed to create user'
