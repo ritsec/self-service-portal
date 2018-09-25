@@ -15,7 +15,7 @@ from flask import current_app
 
 class Config():
     SECRET_KEY = ''
-    DATABASE_URI = ''  # Used by sqlalchemy to create the engine
+    SQLALCHEMY_DATABASE_URI = ''  # Used by sqlalchemy to create the engine
     APP_URL = ''  # Used to create email code links
     GITLAB_URL = ''  # Used to make GitLab API requests
     EMAIL_ACCT = 'ritsecclub@gmail.com'
@@ -23,14 +23,15 @@ class Config():
 
 class DevelopmentConfig(Config):
     SECRET_KEY = 'dev'
-    DATABASE_URI = 'sqlite://'  # In-memory SQLite database
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'  # In-memory SQLite database
     APP_URL = 'http://localhost:5000'
     GITLAB_URL = 'http://localhost:5000'
 
 
 class ProductionConfig(Config):
+    # TODO: add environment vars to master config file
     SECRET_KEY = environ['PORTAL_SECRET_KEY']
-    DATABASE_URI = 'mysql://{user}:{password}@{host}/{db}'.format(
+    SQLALCHEMY_DATABASE_URI = 'mysql://{user}:{password}@{host}/{db}'.format(
         user=environ['SQL_USERNAME']
         password=environ['SQL_PASSWORD']
         host=environ['SQL_HOST']
@@ -38,3 +39,13 @@ class ProductionConfig(Config):
     )
     APP_URL = environ['FRONTEND_URL']
     GITLAB_URL = environ['GITLAB_URL']
+
+
+def get_config():
+    """Simple helper function to automatically grab the right config object"""
+    # FLASK_ENV-to-config-class mapper dictionary
+    envs = {
+        'development': DevelopmentConfig,
+        'production': ProductionConfig,
+    }
+    return envs[environ['FLASK_ENV']]
