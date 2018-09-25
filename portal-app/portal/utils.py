@@ -16,9 +16,9 @@ from os import environ
 from secrets import token_urlsafe
 
 # External imports
-from flask import (
-    current_app, request
-)
+import requests
+
+from flask import current_app, request
 
 # Local imports
 from portal.database import db, EmailCode
@@ -42,6 +42,39 @@ def check_email_code(code):
 def delete_code(code):
     db.session.delete(EmailCode.query.filter_by(value=code).first())
     db.session.commit()
+
+
+def get_user_id(email):
+    """Get the GitLab user ID for a user, specified by email"""
+    resp = requests.get('{url}/users?search={email}'.format(
+        url=current_app.config['GITLAB_URL'],
+        email=email,
+    ), headers={'Private-Token': token=environ['GITLAB_API_TOKEN']})
+    # TODO: document gitlab api token env var
+
+    # Make sure we only got one response
+    if len(resp.json()) > 1:
+        return None
+    else:
+        return resp.json()[0]['id']
+
+
+def make_bad_email_body(req_1, req_2):
+    email = (
+        'Hello!\n'
+        'We have recieved a request to {one}.\n'
+        'If you did not make this request, you may ignore this email for '
+        'now.  If you continue to get these emails, please contact the RITSEC '
+        'administrators at ritsecclub@gmail.com\n'
+        'If you did make this request, {two}.\n'
+        '\n'
+        'This request was recieved from {ip} at {time}.'.format(
+            one=req_1,
+            two=req_2,
+            ip=request.environ['REMOTE_ADDR'],
+            time=datetime.now().isoformat(),
+        )
+    )
 
 
 def make_email_body(req_1, req_2, code, path):
