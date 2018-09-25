@@ -31,6 +31,7 @@ class Config():
     APP_URL = ''  # Used to create email code links
     GITLAB_URL = ''  # Used to make GitLab API requests
     EMAIL_ACCT = 'ritsecclub@gmail.com'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(Config):
