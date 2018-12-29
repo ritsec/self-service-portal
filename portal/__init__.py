@@ -28,11 +28,11 @@ def create_app():
     init_db(app)
 
     # Set up blueprints
-    from . import root
+    from .blueprints import root
     app.register_blueprint(root.bp)
     app.add_url_rule('/', endpoint='index')
 
-    from . import account
+    from .blueprints import account
     app.register_blueprint(account.bp)
 
     return app
